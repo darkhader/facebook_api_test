@@ -1,0 +1,76 @@
+<html>
+
+<head>
+	<title>Facebook Login using Node and Express</title>
+</head>
+<div id="fb-root"></div>
+<script async defer crossorigin="anonymous" src="https://connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v4.0&appId=477949126119051&autoLogAppEvents=1"></script>
+<body>
+	<% if (!user) { %>
+	<div style="width:500px;height:180px;">
+		<h2 style="font-size:40px;">Welcome! Please log in.</h2>
+		
+		<fb:login-button 
+		scope="public_profile,email"
+		onlogin="checkLoginState();">
+	  </fb:login-button>
+	</div>
+	<div id="status"></div>
+	<% } else { %>
+	<h2>Hello, <%= user.displayName %>.</h2>
+	<% } %>
+</body>
+
+<script>
+	window.fbAsyncInit = function() {
+	  FB.init({
+		appId      : '477949126119051',
+		cookie     : true,
+		xfbml      : true,
+		version    : '4.0'
+	  });
+		
+	  FB.AppEvents.logPageView();   
+		
+	};
+  
+	(function(d, s, id){
+	   var js, fjs = d.getElementsByTagName(s)[0];
+	   if (d.getElementById(id)) {return;}
+	   js = d.createElement(s); js.id = id;
+	   js.src = "https://connect.facebook.net/en_US/sdk.js";
+	   fjs.parentNode.insertBefore(js, fjs);
+	 }(document, 'script', 'facebook-jssdk'));
+  </script>
+<script>
+	 function statusChangeCallback(response) {
+                console.log('statusChangeCallback');
+				console.log(response.authResponse.accessToken);
+				let accessToken = response.authResponse.accessToken;
+                // The response object is returned with a status field that lets the
+                // app know the current login status of the person.
+                // Full docs on the response object can be found in the documentation
+                // for FB.getLoginStatus().
+                if (response.status === 'connected') {
+                    // Logged into your app and Facebook.
+                    console.log('Welcome!  Fetching your information.... ');
+                    FB.api('/me', function (response) {
+						
+                        console.log('Successful login for: ' + response.name);
+                        document.getElementById('status').innerHTML =
+                          'Thanks for logging in, ' + response.name + ' Your accesstoken with permission as ADMINISTRATOR and post is: ' + accessToken;
+                    });
+                } else {
+                    // The person is not logged into your app or we are unable to tell.
+                    document.getElementById('status').innerHTML = 'Please log ' +
+                      'into this app.';
+                }
+            }
+function checkLoginState() {
+  FB.getLoginStatus(function(response) {
+    statusChangeCallback(response);
+  });
+}
+</script>
+
+</html>
